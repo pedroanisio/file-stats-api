@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  file-stats-api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: file-stats-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount directories you want to analyze
+      # Adjust these paths based on your needs
+      - /home:/mnt/home:ro          # Mount home directory (read-only)
+      - /var/log:/mnt/logs:ro       # Mount logs directory (read-only)
+      - /opt:/mnt/opt:ro            # Mount opt directory (read-only)
+      - /mnt/nfs/code:/files:ro     # Mount code directory (read-only)
+      - ./data:/data:rw             # Mount local data directory (read-write)
+    environment:
+      # FastAPI environment variables
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+      # Add any custom environment variables here
+      - TZ=UTC
+    networks:
+      - file-stats-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+networks:
+  file-stats-network:
+    driver: bridge
+    name: file-stats-network
+
+volumes:
+  # Define named volumes if needed
+  app-data:
+    driver: local 

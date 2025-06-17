@@ -1,0 +1,60 @@
+services:
+  file-stats-api:
+    # Use pre-built image in production (optional)
+    # image: your-registry/file-stats-api:latest
+    
+    # Production environment variables
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=warning
+      - TZ=UTC
+      - WORKERS=2  # Increase workers for production
+    
+    # Enhanced resource limits for production
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    
+    # Security: Read-only root filesystem
+    read_only: true
+    
+    # Temporary filesystems for writable areas
+    tmpfs:
+      - /tmp:size=100M,noexec,nosuid,nodev
+      - /var/tmp:size=50M,noexec,nosuid,nodev
+    
+    # Security: Drop capabilities
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+    
+    # Security: No new privileges
+    security_opt:
+      - no-new-privileges:true
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+    
+    # Health check with longer intervals for production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
