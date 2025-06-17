@@ -1,0 +1,16 @@
+[project]
+name = "file-stats-api"
+version = "0.1.0"
+description = "A FastAPI service to analyze filesystem metadata and report file stass."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.29.0",
+    "pydantic>=2.5.0",
+    "humanize>=4.9.0"
+]
+
+[project.urls]
+Documentation = "http://127.0.0.1:8000/docs"
+Source = "https://github.com/pedroanisio/file-stats-api"
