@@ -20,7 +20,7 @@ services:
           memory: 512M
           cpus: '0.5'
       restart_policy:
-        condition: on-failure
+        condition: unless-stopped
         delay: 5s
         max_attempts: 3
     
